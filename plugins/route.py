@@ -211,6 +211,15 @@ async def bot_download_handler(request: web.Request):
         except Exception as e:
             raise web.HTTPBadRequest(text=f"Invalid file_id format: {str(e)}")
 
+        # Retrieve file metadata passed from Laravel via query parameters
+        file_size = int(request.rel_url.query.get("size", 0))
+        mime_type = request.rel_url.query.get("mime", "application/octet-stream")
+        file_name = request.rel_url.query.get("name", "")
+
+        setattr(file_id, "file_size", file_size)
+        setattr(file_id, "mime_type", mime_type)
+        setattr(file_id, "file_name", file_name)
+
         return await media_streamer_by_file_id(request, file_id)
     except (AttributeError, BadStatusLine, ConnectionResetError):
         pass

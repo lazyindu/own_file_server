@@ -215,8 +215,6 @@ async def ban_a_user(bot, message):
         temp.BANNED_USERS.append(k.id)
         await message.reply(f"Successfully banned ! Sudhrr ja babu {k.mention}")
 
-
-    
 @Client.on_message(filters.command('unban') & filters.user(ADMINS))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
@@ -248,12 +246,10 @@ async def unban_a_user(bot, message):
         temp.BANNED_USERS.remove(k.id)
         await message.reply(f"Successfully unbanned ! Sudhrr ja babu {k.mention}")
 
-
-    
 @Client.on_message(filters.command('users') & filters.user(ADMINS))
 async def list_users(bot, message):
     # https://t.me/GetTGLink/4184
-    raju = await message.reply('Getting List Of Users')
+    lazydeveloper = await message.reply('Getting List Of Users')
     users = await db.get_all_users()
     out = "Users Saved In DB Are:\n\n"
     async for user in users:
@@ -262,7 +258,7 @@ async def list_users(bot, message):
             out += '( Banned User )'
         out += '\n'
     try:
-        await raju.edit_text(out)
+        await lazydeveloper.edit_text(out)
     except MessageTooLong:
         with open('users.txt', 'w+') as outfile:
             outfile.write(out)
@@ -270,7 +266,7 @@ async def list_users(bot, message):
 
 @Client.on_message(filters.command('chats') & filters.user(ADMINS))
 async def list_chats(bot, message):
-    raju = await message.reply('Getting List Of chats Sona !')
+    lazydeveloper = await message.reply('Getting List Of chats !')
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
@@ -279,7 +275,7 @@ async def list_chats(bot, message):
             out += '( Disabled Chat )'
         out += '\n'
     try:
-        await raju.edit_text(out)
+        await lazydeveloper.edit_text(out)
     except MessageTooLong:
         with open('chats.txt', 'w+') as outfile:
             outfile.write(out)

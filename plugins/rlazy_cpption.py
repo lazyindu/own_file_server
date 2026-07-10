@@ -1,13 +1,7 @@
-    # Credit @LazyDeveloper.
-    # Please Don't remove credit.
-        # Born to make history @LazyDeveloper !
 
-    # Thank you LazyDeveloper for helping us in this Journey
+# Thank you LazyDeveloper for helping us in this Journey
 from pyrogram import Client, filters
 from database.users_chats_db import db
-
-
-
 
 @Client.on_message(filters.private & filters.command('set_caption'))
 async def add_caption(client, message):
@@ -16,8 +10,7 @@ async def add_caption(client, message):
     caption = message.text.split(" ", 1)[1]
     await db.set_caption(message.from_user.id, caption=caption)
     await message.reply_text("__** 𝚈𝙾𝚄𝚁 𝙲𝙰𝙿𝚃𝙸𝙾𝙽 𝚂𝙰𝚅𝙴𝙳 𝚂𝚄𝙲𝙲𝙴𝚂𝚂𝙵𝚄𝙻𝙻𝚈 ✅**__")
-
-    
+  
 @Client.on_message(filters.private & filters.command('del_caption'))
 async def delete_caption(client, message):
     caption = await db.get_caption(message.from_user.id)  

@@ -1,5 +1,4 @@
 # with Love @LazyDeveloperr 💘
-# Subscribe YT @LazyDeveloperr - to learn more about this for free...
 
 from database.users_chats_db import db
 from pyrogram import Client

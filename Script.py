@@ -1,138 +1,61 @@
 class script(object):
-    START_TXT = """🤙 नमस्कार {},
-<spoiler>बीड़ी में तम्बाकू है, __ वाला डाकू हैं🤣 \n🙏 मित्रों नीचे दिए गए बटन पर वोट दे कर मुझे विजय बनाये !🙏                          .</spoiler>
-"""
-    LZTHMB_TEXT = """Hello {},
-Glad to see you here. It seems that you really love <a href=https://t.me/LazyDeveloperr >LazyDeveloper's</a> work.\n\n<b>Thumbnail extracting</b> feature will be available soon, please join <a href=https://t.me/LazyDeveloper>Dev Channel</a> and stay tuned for next <a href=https://t.me/LazyDeveloper>update</a>.\n\n  🐞 ══• ʀᴇᴘᴏʀᴛ ɪꜱꜱᴜᴇ •══ here: <a href=http://t.me/LazyDeveloperSupport>LazyDev Support</a>
-    """
-    LZLINK_TEXT = """Hey {},
-Glad to see you here. It seems that you really love <a href=https://t.me/LazyDeveloperr >LazyDeveloper's</a> work.\n\n<b>File to LiNK converting</b> feature will be available soon, please join <a href=https://t.me/LazyDeveloper>Dev Channel</a> and stay tuned for next <a href=https://t.me/LazyDeveloper>update</a>.\n\n  🐞 ══• ʀᴇᴘᴏʀᴛ ɪꜱꜱᴜᴇ •══ here: <a href=http://t.me/LazyDeveloperSupport>LazyDev Support</a>
-    """
-    DNT_TEXT = """Hey sweetie {},
-Thanks for thinking about us.\nIt seems that you really love <a href=https://t.me/LazyDeveloperr >LazyDeveloper's</a> work.\n\n<b>For your kind information, we do not ask or force anyone for any kind of payment</b>. But if you really want to donate us then you can send money to us from below links...\n\n💵 Reach Donation Page : <a href=http://t.me/DonateLazyDeveloper>Click here...</a>\n\nT❤️ hank you so much..
-    """
-    REQ_AUTH_TEXT = """Hello {},
-\nSorry sweetie.. You must have to be the Authentic User to complete this operation...\n\n👮‍♀ REPORT ISSUE HERE: <a href=https://t.me/LazyDeveloperSupport>LazyDeveloper Support</a>\n\n
-    """
-    SHORTLINK_INFO = """<b>
- ❗<u>ʜᴏᴡ ᴛᴏ ᴇᴀʀɴ ᴍᴏɴᴇʏ ᴜꜱɪɴɢ ʙᴏᴛ</u>❗
+    START_TXT = """Hey {} !!\n
+I'm the First AI-Powered Lazy's Asset, made for u with ❤\n
 
-★ ɴᴏᴡ ʏᴏᴜ ᴄᴀɴ ꜱᴛᴀʀᴛ ᴇᴀʀɴɪɴɢ 💸 ᴍᴏɴᴇʏ ᴛᴏᴅᴀʏ ᴡɪᴛʜ ᴏᴜʀ ꜱɪᴍᴘʟᴇ ᴀɴᴅ ᴇᴀꜱʏ-ᴛᴏ-ᴜꜱᴇ ʙᴏᴛ!
+💬 Just type the movie name & let A.I do the magic!
 
-›› ꜱᴛᴇᴘ 1 : ᴀᴅᴅ ᴛʜɪꜱ ʙᴏᴛ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ᴀꜱ ᴀɴ ᴀᴅᴍɪɴ...
+𓆩ཫ with ♥ @LazyDeveloper ཀ𓆪
+""" 
+    EXPIRED_TEXT = """Your video Quota is up for today!
+💎GET unlimited #FREE Access by Joining our VIP channels.
+📆 Or wait until tomorrow... but who likes waiting?😜"""
 
-›› ꜱᴛᴇᴘ 2 : ᴜꜱᴇ /connect ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ʙᴏᴛ ᴛᴏ ʏᴏᴜʀ ᴘᴍ.
+    UPGRADE_TEXT = """⭕Join these VIP channels to GET #FREE Access! & keep the fun rolling ♥!
 
-›› ꜱᴛᴇᴘ 3 : ᴄʟɪᴄᴋ ᴏɴ ɴᴇxᴛ ʙᴜᴛᴛᴏɴ ᴛᴏ ᴋɴᴏᴡ ʜᴏᴡ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ꜱʜᴏʀᴛʟɪɴᴋ ᴡᴇʙꜱɪᴛᴇ ᴡɪᴛʜ ᴛʜɪs ʙᴏᴛ.
-
-★ ᴅᴏɴ'ᴛ ᴡᴀɪᴛ ᴀɴʏ ʟᴏɴɢᴇʀ ᴛᴏ ꜱᴛᴀʀᴛ ᴇᴀʀɴɪɴɢ ᴍᴏɴᴇʏ ꜰʀᴏᴍ ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ɢʀᴏᴜᴘ. ᴀᴅᴅ ᴏᴜʀ ʙᴏᴛ ᴛᴏᴅᴀʏ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴍᴀᴋɪɴɢ ᴍᴏɴᴇʏ 💰! </b>
-"""
-
-    SHORTLINK_INFO2 = """<b>
-❗<u>ʜᴏᴡ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ sʜᴏʀᴛɴᴇʀ</u>❗
-
-›› ꜱᴛᴇᴘ 4 : ɪꜰ ʏᴏᴜ ᴅᴏɴ'ᴛ ᴜꜱɪɴɢ ᴀɴʏ ꜱʜᴏʀᴛɴᴇʀ ᴡᴇʙꜱɪᴛᴇ ᴛʜᴇɴ ᴍᴀᴋᴇ ᴀᴄᴄᴏᴜɴᴛ ꜰɪʀꜱᴛ ᴏɴ ʟɪɴᴋ ꜱʜᴏʀᴛɴᴇʀ ᴡᴇʙꜱɪᴛ.
-
-›› ꜱᴛᴇᴘ 5 : ᴄᴏᴘʏ ʏᴏᴜʀ ᴀᴘɪ ꜰʀᴏᴍ ᴡᴇʙꜱɪᴛᴇ ᴀɴᴅ ᴛʜᴇɴ, ꜱɪᴍᴘʟʏ ꜱᴇᴛ ʏᴏᴜʀ ᴡᴇʙꜱɪᴛᴇ ᴀɴᴅ ᴀᴘɪ ᴜꜱɪɴɢ ᴛʜᴇ /shortlink ᴄᴏᴍᴍᴀɴᴅ.
-
-› ʟɪᴋᴇ ᴛʜɪꜱ :</b>  <code>/shortlink linkShortnerWebsite.in 00987654uijhvft78929d50f1cba1d5e6f967d1e96298ygufvh</code>
-
-<b>›› ꜱᴛᴇᴘ 6 : ᴄʟɪᴄᴋ ᴏɴ ɴᴇxᴛ ʙᴜᴛᴛᴏɴ ᴛᴏ ᴋɴᴏᴡ ʜᴏᴡ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ ᴛᴜᴛᴏʀɪᴀʟ ᴡɪᴛʜ ᴛʜɪs ʙᴏᴛ.
-
-★ ᴛʜɪꜱ ʙᴏᴛ ᴡɪʟʟ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄᴏɴᴠᴇʀᴛꜱ ʟɪɴᴋꜱ ᴡɪᴛʜ ʏᴏᴜʀ ᴀᴘɪ ᴀɴᴅ ᴡɪʟʟ ᴘʀᴏᴠɪᴅᴇ ʏᴏᴜʀ ʟɪɴᴋꜱ.</b>
-"""
-    SHORTLINK_INFO3 = """<b>
-❗<u>ʜᴏᴡ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ ᴛᴜᴛᴏʀɪᴀʟ</u>❗
-
-›› ꜱᴛᴇᴘ 7 : ᴜꜱᴇ /set_tutorial ᴛᴏ ᴀᴅᴅ ʜᴏᴡ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴠɪᴅᴇᴏ ꜰᴏʀ ʏᴏᴜʀ ꜱʜᴏʀᴛɴᴇʀ ᴡᴇʙꜱɪᴛᴇ.
-
-› ʟɪᴋᴇ ᴛʜɪꜱ :</b> <code>/set_tutorial https://t.me/tutorial_link</code>
-
-<b>›› ꜱᴛᴇᴘ 8 : ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄʜᴇᴄᴋ ᴡʜɪᴄʜ sʜᴏʀᴛᴇɴᴇʀ ʏᴏᴜ ʜᴀᴠᴇ ᴄᴏɴɴᴇᴄᴛᴇᴅ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ᴛʜᴇɴ sᴇɴᴅ /shortlink_info ᴄᴏᴍᴍᴀɴᴅ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ.
-
-★ ᴛʜᴀᴛ'ꜱ ɪᴛ, ɴᴏᴡ ʏᴏᴜ ᴄᴀɴ ᴇᴀʀɴ ᴀ ʟᴏᴛ ᴍᴏɴᴇʏ 💸 ᴜꜱɪɴɢ ᴛʜɪs ʙᴏᴛ.</b>
-"""
-
-    TEXT = "sᴇɴᴅ ᴍᴇ ᴀɴʏ ᴄᴜsᴛᴏᴍ ᴛʜᴜᴍʙɴᴀɪʟ ᴛᴏ sᴇᴛ ɪᴛ"
-
-    RCHD_TG_API_LIMIT = "Downloaded in {} seconds.\nDetected File Size: {}\nSorry. But, I cannot upload files greater than 2GB due to Telegram API limitations."
-
-    FORMAT_SELECTION = "Select format"
-
-    FORMAT_SELECTION2 = "<b>⏯**File Name:** {}\n\n🧬**File Size:** {}\n**⩙ Upload Type:** {}"
+📆 Or wait until tomorrow... but who likes waiting? 😜"""
     
-    SET_CUSTOM_USERNAME_PASSWORD = """"""
+    VERIFIED_TEXT = """𓆩ཫ❤ <b><u>ᴄᴏɴɢʀᴀᴛꜱ {} </u></b>❤ཀ𓆪
 
-    NO_VOID_FORMAT_FOUND = "ERROR... <code>{}</code>"
+ʏᴏᴜ ᴀʀᴇ ᴠᴇʀɪꜰɪᴇᴅ ꜰᴏʀ {} ʜᴏᴜʀꜱ! 🎉\n\nɴᴏᴡ ʏᴏᴜ ʜᴀᴠᴇ <b><u>ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇꜱꜱ</u></b> ᴜɴᴛɪʟ <b> {} </b>😊"""
 
-    UPLOAD_START = "<b>initiating Lazy Upload ⚡</b>"
+    FAILED_VERIFICATION_TEXT = """🚨 <b>ᴏᴏᴘꜱ! ꜱᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ.</b>
 
-    LAZY_UPLOAD_START = """<b>●❤♡ Recieving Lazy File ♡❤●</b>\n\n⏯**File Name:** `{}`"""
+😕 ɪᴛ ʟᴏᴏᴋꜱ ʟɪᴋᴇ ɪ ᴄᴀɴ'ᴛ ᴠᴇʀɪꜰʏ ʏᴏᴜʀ ꜱᴜʙꜱᴄʀɪᴘᴛɪᴏɴ ʙᴇᴄᴀᴜꜱᴇ ɪ'ᴍ <b>ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ</b> ɪɴ ᴛʜᴇ ʀᴇQᴜɪʀᴇᴅ ᴄʜᴀɴɴᴇʟ <b>ᴏʀ</b> ꜱᴏᴍᴇ ᴏᴛʜᴇʀ ᴄʀɪᴛɪᴄᴀʟ ɪꜱꜱᴜᴇ.
 
-    AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS = "▼ Dᴏᴡɴʟᴏᴀᴅᴇᴅ ɪɴ {} sᴇᴄᴏɴᴅs.\n▲ Uᴘʟᴏᴀᴅᴇᴅ ɪɴ {} sᴇᴄᴏɴᴅs\n\n★.•☆•.★𑁔𑁔★ 𝖽𝖾𝗍✫𝗂𝗅𝗌 ★𑁔𑁔★.•☆•.★\n\n🔗<b>URL:</b> {}\n\n✩📂<b>F Name:</b> `{}`\n\n✩📝<b>C Name:</b> `{}`\n\n🧬**File Size:** `{}`\n\n🧡Thank you🧡"
+👤 <b>ᴡʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ᴅᴏ:</b>
+1️⃣ ᴀꜱᴋ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ᴏᴡɴᴇʀ ᴛᴏ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ <b>ᴀᴅᴍɪɴ</b>.
+2️⃣ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ ᴀꜰᴛᴇʀ ᴛʜᴇ ɪꜱꜱᴜᴇ ɪꜱ ꜰɪxᴇᴅ.
 
-    CUSTOM_CAPTION_UL_FILE = " "
+⚡ <b>ᴜɴᴛɪʟ ᴛʜᴇɴ, ꜱᴛᴀʏ ᴀᴡᴇꜱᴏᴍᴇ!</b> 🚀
+"""
+    FORCESUB_MSG = """<b>👋 ʜᴇʟʟᴏ, {}!
+    
+ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴍʏ ᴄʜᴀɴɴᴇʟꜱ ᴛᴏ ᴜꜱᴇ ᴍᴇ
+ᴋɪɴᴅʟʏ ᴊᴏɪɴ ᴛʜᴇꜱᴇ ᴄʜᴀɴɴᴇʟꜱ 👇</b>
+"""
 
-    SLOW_URL_DECED = "Gosh that seems to be a very slow URL. Since you were screwing my home, I am in no mood to download this file. Please provide me fast download url 👊"
+    DNT_TEXT = """ʜᴇʏ ꜱᴡᴇᴇᴛɪᴇ {},
+ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴛʜɪɴᴋɪɴɢ ᴀʙᴏᴜᴛ ᴜꜱ.\n<b>ꜰᴏʀ ʏᴏᴜʀ ᴋɪɴᴅ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ, ᴡᴇ ᴅᴏ ɴᴏᴛ ᴀꜱᴋ ᴏʀ ꜰᴏʀᴄᴇ ᴀɴʏᴏɴᴇ ꜰᴏʀ ᴀɴʏ ᴋɪɴᴅ ᴏꜰ ᴘᴀʏᴍᴇɴᴛ</b>. ʙᴜᴛ ɪꜰ ʏᴏᴜ ʀᴇᴀʟʟʏ ᴡᴀɴᴛ ᴛᴏ ᴅᴏɴᴀᴛᴇ ᴜꜱ ᴛʜᴇɴ ʏᴏᴜ ᴄᴀɴ ꜱᴇɴᴅ ᴍᴏɴᴇʏ ᴛᴏ ᴜꜱ ꜰʀᴏᴍ ʙᴇʟᴏᴡ ʟɪɴᴋꜱ...\n\n💵 ʀᴇᴀᴄʜ ᴅᴏɴᴀᴛɪᴏɴ ᴘᴀɢᴇ : <b> <a href={}>ᴄʟɪᴄᴋ ʜᴇʀᴇ...</a> </b>\n\nT❤️ ᴛʜᴀɴᴋ ʏᴏᴜ ꜱᴏ ᴍᴜᴄʜ..
+"""
+
+    REQ_AUTH_TEXT = """ʜᴇʟʟᴏ {},
+ʏᴏᴜ ᴍᴜꜱᴛ ʜᴀᴠᴇ ᴛᴏ ʙᴇ ᴛʜᴇ ᴀᴜᴛʜᴇɴᴛɪᴄ ᴜꜱᴇʀ ᴛᴏ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜɪꜱ ᴏᴘᴇʀᴀᴛɪᴏɴ...
+"""
+
 
     HELP_TXT = """𝙷𝙴𝚈 {}
 Here is the help for my COMMANDS."""
 
-    LAZY_URL_HELP_TXT = """
-🧬 How to index database channel 
-➪ Add me to your database channel as ADMIN and send me the last media from you db channel with quote. 
-
-🧬 How to set thumbnail for renaming media
-➪ Send me a photo and reply that photo with cmd /st or /set_thumb or /set_thumbnail
-
-🧬 How to set thumbnail for URL Downloading
-➪ Send me a photo and reply that photo with cmd /slt or /set_lazy_thumb or /set_lazy_thumbnail
-
-🧬 How to show normal thumbnail
-➪ Send /vt or /veiw_thumb or /view_thumbnail
-
-🧬 How to show url thumbnail
-➪ Send /vlt or /veiw_lazy_thumb or /view_lazy_thumbnail
-
-🧬 How To Delete normal Thumbnail
-➪ Send /dt or /del_thumb or /delete_thumb
-
-🧬 How To Delete URL Thumbnail
-➪ Send /dlt or /del_lazy_thumb or /delete_lazy_thumb
-
-🧬 How to Rename any Media
-➪ Send me a video or document i will provide you renaming function
-
-🧬 How To Upload File Or Media using url
-➪ Send me any direct download link of your file.
-
-"""
     ABOUT_TXT = """✯ 𝕚𝕥𝕤❜𝕤 me: {}
-✯ OWNER: <a href=https://t.me/Hidden_Xman>👑 Hidden_Xman 👑</a>
 ✯ 𝙲𝚁𝙴𝙰𝚃𝙾𝚁: <a href=https://t.me/LazyDeveloperr>🦋 LazyDeveloperr 🦋</a>
 ✯ 𝙻𝙸𝙱𝚁𝙰𝚁𝚈: 𝙿𝚈𝚁𝙾𝙶𝚁𝙰𝙼
 ✯ 𝙻𝙰𝙽𝙶𝚄𝙰𝙶𝙴: 𝙿𝚈𝚃𝙷𝙾𝙽 𝟹
 ✯ 𝙳𝙰𝚃𝙰 𝙱𝙰𝚂𝙴: 𝙼𝙾𝙽𝙶𝙾 𝙳𝙱
 ✯ 𝙱𝙾𝚃 𝚂𝙴𝚁𝚅𝙴𝚁: 𝙷𝙴𝚁𝙾𝙺𝚄
-✯ 𝙱𝚄𝙸𝙻𝙳 𝚂𝚃𝙰𝚃𝚄𝚂: V 11 PRO
+✯ 𝙱𝚄𝙸𝙻𝙳 𝚂𝚃𝙰𝚃𝚄𝚂: V 12
 """
 
-    SOURCE_TXT = """<b>📨NOTE:</b>
-- देवियों और सज्जनों... 
-अगर ये BOT पसंद आया तो अपना खुद का एक बॉट बना लो !! 
-मैंने, डेवलपर महोदय से बोला है की, इसका दाम अगर हजार से नीचे नहीं रखा तो, देश से बाहर निकलवा दूंगा...
 
-नीचे उसका TELEGRAM USERNAME है !
-<spoiler>The one & only @LazyDeveloperr 💘</spoiler>
-"""
-    DEVELOPER = """<b>📨NOTE:</b>
-- देवियों और सज्जनों... 
-अगर ये BOT पसंद आया तो अपना खुद का एक बॉट बना लो !! 
-मैंने, डेवलपर महोदय से बोला है की, इसका दाम अगर हजार से नीचे नहीं रखा तो, देश से बाहर निकलवा दूंगा...
-
-नीचे उसका TELEGRAM USERNAME है !
-<spoiler>The one & only @LazyDeveloperr 💘</spoiler>
-"""
     MANUELFILTER_TXT = """Help: <b>Filters</b>
 
 - Fɪʟᴛᴇʀ ɪs ᴛʜᴇ ғᴇᴀᴛᴜʀᴇ ᴡᴇʀᴇ ᴜsᴇʀs ᴄᴀɴ sᴇᴛ ᴀᴜᴛᴏᴍᴀᴛᴇᴅ ʀᴇᴘʟɪᴇs ғᴏʀ ᴀ ᴘᴀʀᴛɪᴄᴜʟᴀʀ ᴋᴇʏᴡᴏʀᴅ ᴀɴᴅ LᴀᴢʏPʀɪɴᴇss ᴡɪʟʟ ʀᴇsᴘᴏɴᴅ ᴡʜᴇɴᴇᴠᴇʀ ᴛʜᴀᴛ ᴋᴇʏᴡᴏʀᴅ ʜɪᴛs ᴛʜᴇ ᴍᴇssᴀɢᴇ
@@ -146,6 +69,7 @@ Here is the help for my COMMANDS."""
 • /filters - <code>ʟɪsᴛ ᴀʟʟ ᴛʜᴇ ғɪʟᴛᴇʀs ᴏғ ᴀ ᴄʜᴀᴛ</code>
 • /del - <code>ᴅᴇʟᴇᴛᴇ ᴀ sᴘᴇᴄɪғɪᴄ ғɪʟᴛᴇʀ ɪɴ ᴄʜᴀᴛ</code>
 • /delall - <code>ᴅᴇʟᴇᴛᴇ ᴛʜᴇ ᴡʜᴏʟᴇ ғɪʟᴛᴇʀs ɪɴ ᴀ ᴄʜᴀᴛ (ᴄʜᴀᴛ ᴏᴡɴᴇʀ ᴏɴʟʏ)</code>"""
+    
     BUTTON_TXT = """Help: <b>Buttons</b>
 
 - Supports both url and alert inline buttons.
@@ -161,12 +85,13 @@ Here is the help for my COMMANDS."""
 <b>Alert buttons:</b>
 <code>[Button Text](buttonalert:This is an alert message)</code>"""
     
-    AUTOFILTER_TXT = """Help: <b>Auto Filter</b>
-<b>NOTE:</b>
-1. Make me an admin in your channel if it's private.
-2. Ensure your channel does not contain restricted content (e.g., spam, porn, fake files).
-3. Forward the last message of the channel with quotes. I'll add the files to my database.
+    AUTOFILTER_TXT = """ʜᴇʟᴘ: <b>ᴀᴜᴛᴏ ꜰɪʟᴛᴇʀ</b>
+<b>ɴᴏᴛᴇ:</b>
+1. ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ʏᴏᴜʀ ᴄʜᴀɴɴᴇʟ ɪꜰ ɪᴛ'ꜱ ᴘʀɪᴠᴀᴛᴇ.
+2. ᴇɴꜱᴜʀᴇ ʏᴏᴜʀ ᴄʜᴀɴɴᴇʟ ᴅᴏᴇꜱ ɴᴏᴛ ᴄᴏɴᴛᴀɪɴ ʀᴇꜱᴛʀɪᴄᴛᴇᴅ ᴄᴏɴᴛᴇɴᴛ (ᴇ.ɢ., ꜱᴘᴀᴍ, ᴘᴏʀɴ, ꜰᴀᴋᴇ ꜰɪʟᴇꜱ).
+3. ꜰᴏʀᴡᴀʀᴅ ᴛʜᴇ ʟᴀꜱᴛ ᴍᴇꜱꜱᴀɢᴇ ᴏꜰ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ᴡɪᴛʜ ϙᴜᴏᴛᴇꜱ. ɪ'ʟʟ ᴀᴅᴅ ᴛʜᴇ ꜰɪʟᴇꜱ ᴛᴏ ᴍʏ ᴅᴀᴛᴀʙᴀꜱᴇ.
 """
+
     CONNECTION_TXT = """Help: <b>Connections</b>
 <spoiler>
 - Used to connect bot to PM for managing filters
@@ -183,67 +108,61 @@ Here is the help for my COMMANDS."""
 </spoiler>
 """
     EXTRAMOD_TXT = """Help: <b>Extra Modules</b>
-<blockquote>
-<b>NOTE:</b>
+<blockquote><b>NOTE:</b>
 these are the extra features of Lazy Princess
 
 <b>Commands and Usage:</b>
 • /id - <code>get id of a specified user.</code>
 • /info  - <code>get information about a user.</code>
 • /imdb  - <code>get the film information from IMDb source.</code>
-• /search  - <code>get the film information from various sources.</code>
-</blockquote>
+• /search  - <code>get the film information from various sources.</code> </blockquote>
 """
-    ADMIN_TXT = """Help: <b>Admin Modes</b>
-<spoiler>
-<b>NOTE:</b>
-This module only works for my admins
+    ADMIN_TXT = """ʜᴇʟᴘ: <b>ᴀᴅᴍɪɴ ᴍᴏᴅᴇꜱ</b>
+<b>ɴᴏᴛᴇ:</b>
+ᴛʜɪꜱ ᴍᴏᴅᴜʟᴇ ᴏɴʟʏ ᴡᴏʀᴋꜱ ꜰᴏʀ ᴍʏ ᴀᴅᴍɪɴꜱ
 
-<b>Commands and Usage:</b>
-• /logs - <code>to get the recent errors</code>
-• /stats - <code>to get status of files in db.</code>
-• /delete - <code>to delete a specific file from db.</code>
-• /users - <code>to get list of my users and ids.</code>
-• /chats - <code>to get list of the my chats and ids </code>
-• /leave  - <code>to leave from a chat.</code>
-• /disable  -  <code>do disable a chat.</code>
-• /ban  - <code>to ban a user.</code>
-• /unban  - <code>to unban a user.</code>
-• /channel - <code>to get list of total connected channels</code>
-• /broadcast - <code>to broadcast a message to all users</code>
-</spoiler>"""
-    STATUS_TXT = """<blockquote>★ 𝚃𝙾𝚃𝙰𝙻 𝙵𝙸𝙻𝙴𝚂: <code>{}</code>
-★ 𝚃𝙾𝚃𝙰𝙻 𝚄𝚂𝙴𝚁𝚂: <code>{}</code>
-★ 𝚃𝙾𝚃𝙰𝙻 𝙲𝙷𝙰𝚃𝚂: <code>{}</code>
-★ 𝚄𝚂𝙴𝙳 𝚂𝚃𝙾𝚁𝙰𝙶𝙴: <code>{}</code> 𝙼𝚒𝙱
-★ 𝙵𝚁𝙴𝙴 𝚂𝚃𝙾𝚁𝙰𝙶𝙴: <code>{}</code> 𝙼𝚒𝙱</blockquote>"""
-    LOG_TEXT_G = """#NewGroup
-Group = {}(<code>{}</code>)
-Total Members = <code>{}</code>
-Added By - {}
+<spoiler><b>ᴄᴏᴍᴍᴀɴᴅꜱ ᴀɴᴅ ᴜꜱᴀɢᴇ:</b>
+• /logs - <code>ᴛᴏ ɢᴇᴛ ᴛʜᴇ ʀᴇᴄᴇɴᴛ ᴇʀʀᴏʀꜱ</code>
+• /stats - <code>ᴛᴏ ɢᴇᴛ ꜱᴛᴀᴛᴜꜱ ᴏꜰ ꜰɪʟᴇꜱ ɪɴ ᴅʙ.</code>
+• /delete - <code>ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴀ ꜱᴘᴇᴄɪꜰɪᴄ ꜰɪʟᴇ ꜰʀᴏᴍ ᴅʙ.</code>
+• /users - <code>ᴛᴏ ɢᴇᴛ ʟɪꜱᴛ ᴏꜰ ᴍʏ ᴜꜱᴇʀꜱ ᴀɴᴅ ɪᴅꜱ.</code>
+• /chats - <code>ᴛᴏ ɢᴇᴛ ʟɪꜱᴛ ᴏꜰ ᴛʜᴇ ᴍʏ ᴄʜᴀᴛꜱ ᴀɴᴅ ɪᴅꜱ </code>
+• /leave  - <code>ᴛᴏ ʟᴇᴀᴠᴇ ꜰʀᴏᴍ ᴀ ᴄʜᴀᴛ.</code>
+• /disable  -  <code>ᴅᴏ ᴅɪꜱᴀʙʟᴇ ᴀ ᴄʜᴀᴛ.</code>
+• /ban  - <code>ᴛᴏ ʙᴀɴ ᴀ ᴜꜱᴇʀ.</code>
+• /unban  - <code>ᴛᴏ ᴜɴʙᴀɴ ᴀ ᴜꜱᴇʀ.</code>
+• /channel - <code>ᴛᴏ ɢᴇᴛ ʟɪꜱᴛ ᴏꜰ ᴛᴏᴛᴀʟ ᴄᴏɴɴᴇᴄᴛᴇᴅ ᴄʜᴀɴɴᴇʟꜱ</code>
+• /broadcast - <code>ᴛᴏ ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴀ ᴍᴇꜱꜱᴀɢᴇ ᴛᴏ ᴀʟʟ ᴜꜱᴇʀꜱ</code> </spoiler>
 """
-    LOG_TEXT_P = """#NewUser
-ID - <code>{}</code>
-Name - {}
+
+    STATUS_TXT = """<blockquote>★ ᴛᴏᴛᴀʟ ꜰɪʟᴇꜱ: <code>{}</code>
+★ ᴛᴏᴛᴀʟ ᴜꜱᴇʀꜱ: <code>{}</code>
+★ ᴛᴏᴛᴀʟ ᴄʜᴀᴛꜱ: <code>{}</code>
+★ ᴜꜱᴇᴅ ꜱᴛᴏʀᴀɢᴇ: <code>{}</code> 
+★ ꜰʀᴇᴇ ꜱᴛᴏʀᴀɢᴇ: <code>{}</code> </blockquote>"""
+
+    LOG_TEXT_G = """#ɴᴇᴡɢʀᴏᴜᴘ
+ɢʀᴏᴜᴘ = {}(<code>{}</code>)
+ᴛᴏᴛᴀʟ ᴍᴇᴍʙᴇʀꜱ = <code>{}</code>
+ᴀᴅᴅᴇᴅ ʙʏ - {}
 """
-    PLANS_TXT = """<b>👋 ʜᴇʏ {},
+    I_CUDNT = """🤧 𝗛𝗲𝗹𝗹𝗼 {}
+
+𝗜 𝗰𝗼𝘂𝗹𝗱𝗻'𝘁 𝗳𝗶𝗻𝗱 𝗮𝗻𝘆 𝗺𝗼𝘃𝗶𝗲 𝗼𝗿 𝘀𝗲𝗿𝗶𝗲𝘀 𝗶𝗻 𝘁𝗵𝗮𝘁 𝗻𝗮𝗺𝗲.. 😐"""
+
+    CUDNT_FND = """🤧 𝗛𝗲𝗹𝗹𝗼 {}
+
+𝗜 𝗰𝗼𝘂𝗹𝗱𝗻'𝘁 𝗳𝗶𝗻𝗱 𝗮𝗻𝘆𝘁𝗵𝗶𝗻𝗴 𝗿𝗲𝗹𝗮𝘁𝗲𝗱 𝘁𝗼 𝘁𝗵𝗮𝘁 𝗱𝗶𝗱 𝘆𝗼𝘂 𝗺𝗲𝗮𝗻 𝗮𝗻𝘆 𝗼𝗻𝗲 𝗼𝗳 𝘁𝗵𝗲𝘀𝗲 ?? 👇"""
     
-<blockquote>🎖️ ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs :</blockquote>
+    LOG_TEXT_P = """#ɴᴇᴡᴜꜱᴇʀ
+🆔ɪᴅ - <code>{}</code>
+🧔ɴᴀᴍᴇ - {}
+"""
 
-● <code>02₹</code> ➛ <u>ʙʀᴏɴᴢᴇ ᴘʟᴀɴ</u> » <code>7 ᴅᴀʏꜱ</code>
-● <code>09₹</code> ➛ <u>Sɪʟᴠᴇʀ ᴘʟᴀɴ</u> » <code>31 ᴅᴀʏꜱ</code>
-● <code>23₹</code> ➛ <u>ɢᴏʟᴅ ᴘʟᴀɴ</u> » <code>91 ᴅᴀʏꜱ</code>
-● <code>49₹</code> ➛ <u>ᴘʟᴀᴛɪɴᴜᴍ ᴘʟᴀɴ</u> » <code>181 ᴅᴀʏꜱ</code>
-● <code>99₹</code> ➛ <u>ᴅɪᴀᴍᴏɴᴅ ᴘʟᴀɴ</u> » <code>366 ᴅᴀʏꜱ</code>
+    DONATION_TEXT = """❤ ɪꜰ ʏᴏᴜ ʟɪᴋᴇ ᴏᴜʀ ʙᴏᴛ ᴘʟᴇᴀꜱᴇ ʜᴇʟᴘ ᴜꜱ ᴍᴀɪɴᴛᴀɪɴɪɴɢ ꜱᴇʀᴠᴇʀ ᴄᴏꜱᴛ ʙʏ ᴅᴏɴᴀᴛɪɴɢ ꜱᴏᴍᴇ ᴀᴍᴏᴜɴᴛ..."""
 
-<blockquote>♥ ᴜᴘɪ ɪᴅ - <code>{}</code>
-📸 sᴄᴀɴ QR - <a href='{}'>ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ Pay</a></blockquote>
-
-<blockquote>⚜️ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ ʙʏ ᴜꜱɪɴɢ : /myplan</blockquote>
-
-‼️ ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ.</b>"""
     PROGRESS_BAR = """\n
-╭━━━━❰ PROGRESS BAR ❱━➣
+╭━━━━❰ ʟᴀᴢʏ ᴘʀᴏɢʀᴇꜱꜱ ❱━➣
 ┣⪼ 🗂️ : {1} | {2}
 ┣⪼ ⏳️ : {0}%
 ┣⪼ 🚀 : {3}/s

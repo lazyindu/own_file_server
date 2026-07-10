@@ -1,17 +1,10 @@
-# Credit @LazyDeveloper.
-# Please Don't remove credit.
-# Born to make history @LazyDeveloper !
-# Thank you LazyDeveloper for helping us in this Journey
-# 🥰  Thank you for giving me credit @LazyDeveloperr  🥰
-# for any error please contact me -> telegram@LazyDeveloperr or insta @LazyDeveloperr 
-# rip paid developers 🤣 - >> No need to buy paid source code while @LazyDeveloperr is here 😍😍
 import logging
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
 from info import *
-from imdb import IMDb
+from imdb import IMDb, Movie
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram import enums
+from pyrogram import enums, filters
 from typing import Union
 import re
 import os
@@ -20,7 +13,6 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import requests
 import aiohttp
-from shortzy import Shortzy
 
 #3 => verification_steps ! [Youtube@LazyDeveloperr]
 from Script import script #add this
@@ -28,7 +20,11 @@ import pytz #add this
 from datetime import datetime, date #add this
 import random 
 import string
+import time
+from pyrogram.enums import ChatMemberStatus
+
 # ./done_lazy_baby 
+from imdb import Cinemagoer
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -38,6 +34,7 @@ BTN_URL_REGEX = re.compile(
 )
 
 imdb = IMDb() 
+# imdb = Cinemagoer() 
 
 BANNED = {}
 SMART_OPEN = '“'
@@ -45,11 +42,10 @@ SMART_CLOSE = '”'
 START_CHAR = ('\'', '"', SMART_OPEN)
 START_CHAR = ('\'', '"', SMART_OPEN)
 
-#2 => verification_steps ! [Youtube@LazyDeveloperr]
 VERIFIED = {} 
-TOKENS = {} # also add this in verification steps
+TOKENS = {} 
 
-# temp db for banned 
+
 class temp(object):
     BANNED_USERS = []
     BANNED_CHATS = []
@@ -65,38 +61,248 @@ class temp(object):
     B_NAME = None
     SETTINGS = {}
 
-async def is_subscribed(bot, query):
-    if await db.find_join_req(query.from_user.id):
+    # Cache for popular movies
+    POPULAR_MOVIES = []
+    POPULAR_MOVIES_TIMESTAMP = 0  # Timestamp for last update
+    
+    # Cache for popular movies
+    LAZYGOAT_MOVIES = []
+    LAZYGOAT_MOVIES_TIMESTAMP = 0  # Timestamp for last update
+    # Cache for popular movies
+    LAZYTRENDING_MOVIES = []
+    TRENDING_MOVIES_TIMESTAMP = 0  # Timestamp for last update
+    TRENDING_CACHE_DURATION = 60 # isko 1 minute hi rehne do 
+    CACHE_DURATION = 86400   # 24 hours in seconds
+    ASSIGNED_CHANNEL = []
+    LAZY_LOCAL_FILES = {}
+
+def lazy_readable(seconds):
+    hours, remainder = divmod(seconds, 3600)
+    minutes, sec = divmod(remainder, 60)
+    parts = []
+    if hours > 0:
+        parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
+    if minutes > 0:
+        parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
+    if sec > 0 or not parts:  # Show seconds if no other parts
+        parts.append(f"{sec} second{'s' if sec != 1 else ''}")
+    return ", ".join(parts)
+
+async def schedule_deletion(client, chat_id, lazyfiles, BATCH=False):
+    try:
+        # Wait for -- minutes
+        # Lmg = await client.send_message(chat_id = chat_id, text=f"<b>❗️ <u>ɪᴍᴘᴏʀᴛᴀɴᴛ</u> ❗️</b>\n\n<b>ᴛʜᴇꜱᴇ ᴠɪᴅᴇᴏ / ᴠɪᴅᴇᴏꜱ  ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ</b> <b><u>{lazy_readable(FILE_AUTO_DELETE_TIME)}</u></b><b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ).</b>\n\n<b><i>📌 ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜᴇꜱᴇ ᴠɪᴅᴇᴏꜱ / ꜰɪʟᴇꜱ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ.</i></b>")
+        await asyncio.sleep(FILE_AUTO_DELETE_TIME)  # -- minutes in seconds
+        if BATCH:
+            for x in lazyfiles:
+                await x.delete()
+            # print("🚩 LAZY DELETION DONE ::>> For BATCH File ✅")
+        else:
+            await lazyfiles.delete()
+            # print("🚩 LAZY DELETION DONE ::>> For Single File ✅")
+    except Exception as e:
+        logging.info(f"Error in deletion task: {e}")
+
+def to_small_caps(text):
+    small_caps = {
+        'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ', 'f': 'ғ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ', 'j': 'ᴊ', 
+        'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ', 'p': 'ᴘ', 'q': 'ǫ', 'r': 'ʀ', 's': 's', 't': 'ᴛ', 
+        'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 'y': 'ʏ', 'z': 'ᴢ'
+    }
+    return ''.join([small_caps.get(c, c) for c in text.lower()])
+
+# lazy Function to fetch popular movies
+async def get_popular_movies():
+    current_time = time.time()
+    if current_time - temp.POPULAR_MOVIES_TIMESTAMP > temp.CACHE_DURATION:
+        list1 = []
+        list2 = []
+        list3 = []
+        movies= []
+        # Fetch popular TV shows
+
+        try:
+            list3 = imdb.get_popular100_movies() #😢 Not working well #lazydeveloper
+        
+            # print(f"list3 => {list3}")
+        except Exception as lazydeveloper:
+            logging.info(f"Try again later : No data available for Movies: {lazydeveloper}")
+
+        try:
+            list1 = imdb.get_popular100_tv()#working  -- Popular Webseries - #worldwide list !#Lazydeveloper add more here as u wish 
+        
+            # print(f"list1 => {list1}")
+        except Exception as lazydeveloper:
+            logging.info(f"Try again later : No data available for TV shows: {lazydeveloper}")
+
+        try:
+            list2 = imdb.get_boxoffice_movies()#working -- ! List of top box-office movies
+            # print(f"list2 => {list2}")
+        except Exception as lazydeveloper:
+            logging.info(f"Try again later : No data available for BOX-OFFICE: {lazydeveloper}")
+        
+
+        # Extend movies only if the lists have data
+        if list3:
+            movies.extend(list3)
+        if list1:
+            movies.extend(list1)
+        if list2:
+            movies.extend(list2)
+
+        popular_movies = []
+        for movie in movies:
+            try:
+                title = movie.get('title')
+                movie_id = movie.movieID
+
+                # Validate title and movieID
+                if isinstance(title, str) and title.strip() and isinstance(movie_id, str):
+                    popular_movies.append((title, movie_id))
+                else:
+                    logging.info(f"Invalid movie data: {movie}")
+            except Exception as e:
+                logging.info(f"Error processing movie: {movie}, Error: {e}")
+
+        temp.POPULAR_MOVIES = popular_movies
+        temp.POPULAR_MOVIES_TIMESTAMP = current_time
+
+    return temp.POPULAR_MOVIES
+
+# lazy Function to fetch greatest of all time movies
+async def get_lazy_goat_movies():
+    current_time = time.time()
+    
+    if current_time - temp.LAZYGOAT_MOVIES_TIMESTAMP > temp.CACHE_DURATION:
+        list1 = []
+        list2 = []
+        list3 = []
+        movies= []
+        try:
+            list1 = imdb.get_top250_movies()
+        except Exception as lazydeveloper:
+            logging.info(f"No data available for G.O.A.T movie list1 : {lazydeveloper}")
+        
+        try:
+            list2 = imdb.get_bottom100_movies()
+        except Exception as lazydeveloper:
+            logging.info(f"No data available for G.O.A.T movie list2 : {lazydeveloper}")
+        
+        try:
+            list3 = imdb.get_top250_tv()
+        except Exception as lazydeveloper:
+            logging.info(f"No data available for G.O.A.T tv list : {lazydeveloper}")
+        
+        try:
+            list4 = imdb.get_top250_indian_movies()
+        except Exception as lazydeveloper:
+            logging.info(f"No data available for [INDIAN] G.O.A.T movie list4 : {lazydeveloper}")
+
+        # extend movies only if the lists have data 😢#lazydeveloperr find any better way
+        if list1:
+            movies.extend(list1)
+        if list2:
+            movies.extend(list2)
+        if list3:
+            movies.extend(list3)
+        if list4:
+            movies.extend(list4)
+
+        lazygoat_movies = [(movie.get('title'), movie.movieID) for movie in movies]  # Fetch top 5 movies
+        temp.LAZYGOAT_MOVIES = lazygoat_movies
+        temp.LAZYGOAT_MOVIES_TIMESTAMP = current_time
+
+    return temp.LAZYGOAT_MOVIES
+
+# lazy Function to fetch trending movies
+async def get_lazy_trending_movies():
+    current_time = time.time()
+    if current_time - temp.TRENDING_MOVIES_TIMESTAMP > temp.TRENDING_CACHE_DURATION:
+        lazytrends = await db.get_top_searches()
+        lazygoat_movies = [(movie.get('query'), movie.get('emoji')) for movie in lazytrends]  # Fetch top 5 movies
+        temp.LAZYTRENDING_MOVIES = lazygoat_movies
+        temp.TRENDING_MOVIES_TIMESTAMP = current_time
+        # print(temp.LAZYTRENDING_MOVIES)
+    return temp.LAZYTRENDING_MOVIES
+
+
+# ==============================================================================
+async def is_subscribed(bot, channel, lazyuserr):
+    try:
+        user = await bot.get_chat_member(channel, lazyuserr)
+    except UserNotParticipant:
+        pass
+    except Exception as e:
+        logger.exception(e)
+    else:
+        if user.status != enums.ChatMemberStatus.BANNED:
+            return True
+
+    return False
+
+# # ==============================================================================
+# async def lazy_has_subscribed(client, update):
+#     if not AUTH_CHANNEL: 
+#         return True
+
+#     lazydeveloperIDS = update.from_user.id
+#     if lazydeveloperIDS in ADMINS:
+#         return True
+
+#     for channel in AUTH_CHANNEL:
+#         if await db.find_join_req(update.from_user.id):
+#             return True
+#         try:
+#             lazydeveloperMBS = await client.get_chat_member(chat_id=channel, user_id=lazydeveloperIDS)
+#         except UserNotParticipant:
+#             return False
+#         if lazydeveloperMBS.status not in [ChatMemberStatus.OWNER, 
+#                                 ChatMemberStatus.ADMINISTRATOR, 
+#                                 ChatMemberStatus.MEMBER]:
+#             return False
+
+#     return True
+# # ==============================================================================
+
+# [[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]
+# ==============================================================================
+async def lazy_has_subscribed(client, update):
+    if not AUTH_CHANNEL: 
         return True
-    try:
-        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
-    except UserNotParticipant:
-        pass
-    except Exception as e:
-        logger.exception(e)
-    else:
-        if user.status != enums.ChatMemberStatus.BANNED:
+
+    lazydeveloperIDS = update.from_user.id
+    if lazydeveloperIDS in ADMINS:
+        return True
+
+    for channel in AUTH_CHANNEL:
+        # check DB if user already has a record for this channel
+        if await db.find_join_req(update.from_user.id, int(channel)):
             return True
 
-    return False
+        try:
+            lazydeveloperMBS = await client.get_chat_member(
+                chat_id=int(channel), 
+                user_id=lazydeveloperIDS
+            )
+        except UserNotParticipant:
+            return False
 
-async def is_lazy_channel_joined(bot, query):
+        if lazydeveloperMBS.status not in [
+            ChatMemberStatus.OWNER, 
+            ChatMemberStatus.ADMINISTRATOR, 
+            ChatMemberStatus.MEMBER
+        ]:
+            return False
 
-    try:
-        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
-    except UserNotParticipant:
-        pass
-    except Exception as e:
-        logger.exception(e)
-    else:
-        if user.status != enums.ChatMemberStatus.BANNED:
-            return True
+    return True
+# ==============================================================================
 
-    return False
+# [[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]
 
-async def get_poster(query, bulk=False, id=False, file=None):
+
+# no use
+async def get_poster2(query, bulk=False, id=False, file=None):
     if not id:
-        # https://t.me/GetTGLink/4183
         query = (query.strip()).lower()
         title = query
         year = re.findall(r'[1-2]\d{3}$', query, re.IGNORECASE)
@@ -173,6 +379,219 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'url':f'https://www.imdb.com/title/tt{movieid}'
     }
 
+# 🚩 currently using this logic
+async def get_poster(query, bulk=False, id=False, file=None):
+    if not id:
+        query = (query.strip()).lower()
+        title = query
+        year = re.findall(r'[1-2]\d{3}$', query, re.IGNORECASE)
+        if year:
+            year = list_to_str(year[:1])
+            title = (query.replace(year, "")).strip()
+        elif file is not None:
+            year = re.findall(r'[1-2]\d{3}', file, re.IGNORECASE)
+            if year:
+                year = list_to_str(year[:1]) 
+        else:
+            year = None
+        movieid = imdb.search_movie(title.lower(), results=10)
+        if not movieid:
+            return None
+        if year:
+            filtered=list(filter(lambda k: str(k.get('year')) == str(year), movieid))
+            if not filtered:
+                filtered = movieid
+        else:
+            filtered = movieid
+        movieid=list(filter(lambda k: k.get('kind') in ['movie', 'tv series'], filtered))
+        if not movieid:
+            movieid = filtered
+        if bulk:
+            return movieid
+        movieid = movieid[0].movieID
+    else:
+        movieid = query
+    movie = imdb.get_movie(movieid)
+    if movie.get("original air date"):
+        date = movie["original air date"]
+    elif movie.get("year"):
+        date = movie.get("year")
+    else:
+        date = "N/A"
+    plot = ""
+    if not LONG_IMDB_DESCRIPTION:
+        plot = movie.get('plot')
+        if plot and len(plot) > 0:
+            plot = plot[0]
+    else:
+        plot = movie.get('plot outline')
+    if plot and len(plot) > 800:
+        plot = plot[0:800] + "..."
+    
+    return {
+        'title': movie.get('title'),
+        'votes': movie.get('votes'),
+        "aka": list_to_str(movie.get("akas")),
+        "seasons": movie.get("number of seasons"),
+        "box_office": movie.get('box office'),
+        'localized_title': movie.get('localized title'),
+        'kind': movie.get("kind"),
+        "imdb_id": f"tt{movie.get('imdbID')}",
+        "cast": list_to_str(movie.get("cast")),
+        "runtime": list_to_str(movie.get("runtimes")),
+        "countries": list_to_str(movie.get("countries")),
+        "certificates": list_to_str(movie.get("certificates")),
+        "languages": list_to_str(movie.get("languages")),
+        "director": list_to_str(movie.get("director")),
+        "writer":list_to_str(movie.get("writer")),
+        "producer":list_to_str(movie.get("producer")),
+        "composer":list_to_str(movie.get("composer")) ,
+        "cinematographer":list_to_str(movie.get("cinematographer")),
+        "music_team": list_to_str(movie.get("music department")),
+        "distributors": list_to_str(movie.get("distributors")),
+        'release_date': date,
+        'year': movie.get('year'),
+        'genres': list_to_str(movie.get("genres")),
+        'poster': movie.get('full-size cover url', PICS),
+        'plot': plot,
+        'rating': str(movie.get("rating")),
+        'url':f'https://www.imdb.com/title/tt{movieid}'
+    }
+
+# ONLY TITLE POSTER 
+async def get_poster3(query, bulk=False, id=False):
+    if not id:
+        query = query.strip().lower()
+        title = query
+        year = re.findall(r'[1-2]\d{3}$', query, re.IGNORECASE)
+        if year:
+            year = year[0]
+            title = query.replace(year, "").strip()
+        movieid = imdb.search_movie(title, results=10)
+        if not movieid:
+            return None
+        if year:
+            movieid = [m for m in movieid if str(m.get('year')) == str(year)]
+        movieid = [m for m in movieid if m.get('kind') in ['movie', 'tv series']]
+        if not movieid:
+            return None
+        if bulk:
+            return movieid
+        movieid = movieid[0].movieID
+    else:
+        movieid = query
+
+    movie = imdb.get_movie(movieid)
+    return {
+        'title': movie.get('title'),
+        'poster': movie.get('full-size cover url', PICS)
+    }
+
+# no use
+async def get_poster4x(query, bulk=False, id=False, file=None):
+    if not id:
+        query = (query.strip()).lower()
+        title = query
+        year = None
+
+        # Extract year from the file name if provided
+        if file is not None:
+            year = re.findall(r'[1-2]\d{3}', file, re.IGNORECASE)
+            if year:
+                year = list_to_str(year[:1])
+
+        # Extract year from query if not found in file
+        if not year:
+            year = re.findall(r'[1-2]\d{3}$', query, re.IGNORECASE)
+            if year:
+                year = list_to_str(year[:1])
+                title = (query.replace(year, "")).strip()
+
+        # Search for movie using IMDb
+        movieid = imdb.search_movie(title.lower(), results=10)
+        if not movieid:
+            return None
+
+        # Filter by year if available
+        if year:
+            filtered = list(filter(lambda k: str(k.get('year')) == str(year), movieid))
+            if not filtered:
+                filtered = movieid
+        else:
+            filtered = movieid
+
+        # Filter for movies or TV series
+        movieid = list(filter(lambda k: k.get('kind') in ['movie', 'tv series'], filtered))
+        if not movieid:
+            movieid = filtered
+
+        if bulk:
+            return movieid
+
+        movieid = movieid[0].movieID
+    else:
+        movieid = query
+
+    # Fetch movie details
+    movie = imdb.get_movie(movieid)
+
+    # Return required fields
+    return {
+        'title': movie.get('title'),
+        'poster': movie.get('full-size cover url', PICS),
+        'rating': str(movie.get('rating')),
+        'url': f'https://www.imdb.com/title/tt{movieid}'
+    }
+
+# no use
+async def get_poster4as(query, bulk=False, id=False):
+    query = query.strip().lower()
+
+    # Search for movie
+    movieid = imdb.search_movie(query, results=10)
+    if not movieid:
+        return None
+
+    # Filter for movies or TV series
+    filtered = list(filter(lambda k: k.get('kind') in ['movie', 'tv series'], movieid))
+    if not filtered:
+        filtered = movieid
+
+    if bulk:
+        return filtered
+
+    movieid = filtered[0].movieID
+    movie = imdb.get_movie(movieid)
+
+    return {
+        'title': movie.get('title'),
+        'poster': movie.get('full-size cover url', PICS),
+        'rating': str(movie.get('rating')),
+        'url': f'https://www.imdb.com/title/tt{movieid}'
+    }
+
+# no use
+async def get_poster4(query, bulk=False, id=False):
+    query = query.strip().lower()
+
+    # Perform a more restricted search to minimize the response size
+    movieid = imdb.search_movie(query, results=1)  # Limit results to 1 if you're sure the query is unique
+    if not movieid:
+        return None
+
+    movieid = movieid[0].movieID  # Get the ID of the first result
+
+    # Retrieve only the necessary fields instead of all movie details
+    movie = imdb.get_movie(movieid)
+
+    return {
+        'title': movie.get('title'),
+        'poster': movie.get('full-size cover url', PICS),
+        'rating': str(movie.get('rating')),
+        'url': f'https://www.imdb.com/title/tt{movieid}'
+    }
+
+
 async def broadcast_messages(user_id, message):
     try:
         await message.copy(chat_id=user_id)
@@ -219,8 +638,13 @@ async def save_group_settings(group_id, key, value):
     current[key] = value
     temp.SETTINGS[group_id] = current
     await db.update_settings(group_id, current)
-    
-def get_size(size):
+
+def get_size(file_size):
+    """converting file to GB // as per client reuirement 🚀"""
+    gb_size = file_size / (1024 ** 3)  # Convert bytes to GB
+    return "%.2fᴳᴮ" % gb_size  # Format the output with superscript GB
+
+def get_size_mb_gb(size):
     """Get size in readable format"""
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
     size = float(size)
@@ -453,43 +877,12 @@ async def get_shortlink(chat_id, link):
     original_url = link  # URL from the request
     if not original_url:
         return "Error: URL not provided!", 400
-
     # Encode URL into Base64
     DOMAIN = URL
     encoded_url = base64.urlsafe_b64encode(original_url.encode()).decode()
     short_url = f"{DOMAIN}getfile/{encoded_url}"
-    print(f"This is encoded url ==>{short_url}")
+    # print(f"This is encoded url ==>{short_url}")
     return short_url
-
-# async def get_shortlink(chat_id, link):
-#     settings = await get_settings(chat_id) #fetching settings for group
-#     if 'shortlink' in settings.keys():
-#         URL = settings['shortlink']
-#         API = settings['shortlink_api']
-#     else:
-#         URL = URL_SHORTENR_WEBSITE
-#         API = URL_SHORTNER_WEBSITE_API
-#     if URL.startswith("shorturllink") or URL.startswith("terabox.in") or URL.startswith("urlshorten.in"):
-#         URL = URL_SHORTENR_WEBSITE
-#         API = URL_SHORTNER_WEBSITE_API
-#     if URL == "api.shareus.io":
-#         url = f'https://{URL}/easy_api'
-#         params = {
-#             "key": API,
-#             "link": link,
-#         }
-#         try:
-#             async with aiohttp.ClientSession() as session:
-#                 async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
-#                     data = await response.text()
-#                     return data
-#         except Exception as e:
-#             logger.error(e)
-#             return link
-#     else:
-#         shortzy = Shortzy(api_key=API, base_site=URL)
-#         link = await shortzy.convert(link)
-#         return link
    
 def get_readable_time(seconds: int) -> str:
     count = 0
@@ -600,19 +993,23 @@ async def get_token(bot, userid, link):
     TOKENS[user.id] = {token: False}
     link = f"{link}verify-{user.id}-{token}"
     print(link)
-    final_verified_lazy_link = await extract_verified_short_link(link)
+    final_verified_lazy_link = await get_shortlink(user.id, link)
     return str(final_verified_lazy_link)
 
+from datetime import datetime, timedelta
 async def verify_user(bot, userid, token):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id, user.first_name)
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
     TOKENS[user.id] = {token: True}
-    tz = pytz.timezone('Asia/Kolkata')
-    today = date.today()
-    VERIFIED[user.id] = str(today)
+    timezone = pytz.timezone("Asia/Kolkata")
+    expiry_time = datetime.now(timezone) + timedelta(hours=MAX_SUBSCRIPTION_TIME)  # 24 hours from now
+    expiry_str = expiry_time.strftime("%Y-%m-%d %H:%M:%S")  # Format as YYYY-MM-DD HH:MM:SS
 
+    xx = await db.update_user({"id": user.id, "subscription": "limited", "subscription_expiry": expiry_str})
+    print(xx)
+    
 async def check_verification(bot, userid):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
@@ -630,7 +1027,6 @@ async def check_verification(bot, userid):
             return True
     else:
         return False
-    
 
 # Credit @LazyDeveloper.
 # Please Don't remove credit.

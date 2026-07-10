@@ -1,13 +1,5 @@
-# Credit @LazyDeveloper.
-# Please Don't remove credit.
-# Born to make history @LazyDeveloper !
-# Thank you LazyDeveloper for helping us in this Journey
-# 🥰  Thank you for giving me credit @LazyDeveloperr  🥰
-# for any error please contact me -> telegram@LazyDeveloperr or insta @LazyDeveloperr 
-# rip paid developers 🤣 - >> No need to buy paid source code while @LazyDeveloperr is here 😍😍 
 from os import environ
 from typing import Dict, Optional
-
 
 class TokenParser:
     def __init__(self, config_file: Optional[str] = None):

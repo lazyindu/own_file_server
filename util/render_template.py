@@ -15,21 +15,6 @@ import aiofiles
 import logging
 import aiohttp
 
-async def render_lazydeveloper(video_url):
-    """
-    Render an HTML page for the given video URL and page type.
-    """
-    # Load the play.html template
-    async with aiofiles.open("template/lazyshortner.html", mode="r") as r:
-        html_content = await r.read()
-
-    # Replace placeholders in the HTML template
-    heading = "Mehar Movie Words"
-    # print(f"📺Here is url ==> {video_url}")
-    html = html_content.replace("thenameislazydeveloper", heading).replace("thefileislazydeveloper", video_url)
-
-    return html
-
 
 async def render_page(id, secure_hash):
     file_data=await get_file_ids(LazyPrincessBot, int(LOG_CHANNEL), int(id))
@@ -55,4 +40,19 @@ async def render_page(id, secure_hash):
                     heading = 'Download {}'.format(file_data.file_name)
                     file_size = humanbytes(int(u.headers.get('Content-Length')))
                     html = (await r.read()) % (heading, file_data.file_name, src, file_size)
+    return html
+
+async def render_lazydeveloper(video_url):
+    """
+    Render an HTML page for the given video URL and page type.
+    """
+    # Load the .html template
+    async with aiofiles.open("template/lazyshortner.html", mode="r") as r:
+        html_content = await r.read()
+
+    # Replace placeholders in the HTML template
+    heading = "LazyDeveloperr"
+    # print(f"📺Here is url ==> {video_url}")
+    html = html_content.replace("thenameislazydeveloper", heading).replace("thefileislazydeveloper", video_url)
+
     return html

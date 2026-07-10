@@ -1,7 +1,14 @@
 # https://github.com/odysseusmax/animated-lamp/blob/master/bot/database/database.py
 import motor.motor_asyncio
-import datetime
-from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, MAX_BTN, URL_MODE, TUTORIAL, IS_TUTORIAL, URL_SHORTENR_WEBSITE, URL_SHORTNER_WEBSITE_API
+# import datetime
+from info import DATABASE_NAME,DAILY_LIMIT, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, MAX_BTN, URL_MODE, TUTORIAL, IS_TUTORIAL, URL_SHORTENR_WEBSITE, URL_SHORTNER_WEBSITE_API
+from datetime import datetime, timedelta, date
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ChatJoinRequest
+# Free limit per user
+FREE_LIMIT = 3
+JOIN_REQUIRED = 2  # Number of channels user must join for unlimited access
+import pytz
+timezone = pytz.timezone("Asia/Kolkata")
 
 class Database:
     
@@ -10,48 +17,12 @@ class Database:
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
-        self.users = self.db.uersz
+        self.users = self.db.userdata
         self.req = self.db.requests
-        self.votes = self.db.votes
-
-    async def initialize_votes(self):
-        # Initialize votes if not already present
-        existing = await self.votes.find_one({"_id": "vote_counts"})
-        if not existing:
-            await self.votes.insert_one({
-                "_id": "vote_counts",
-                "🤬": 0,
-                "👎": 0,
-                "🖕": 0,
-                "💩": 0,
-            })
-
-    async def update_vote(self, emoji, user_id):
-        # Get the current timestamp
-        current_time = datetime.datetime.utcnow()
-        today = current_time.date()
-
-        # Check if the user has voted today
-        user = await self.users.find_one({"user_id": user_id})
-        if user:
-            last_vote_time = user.get('last_vote_time')
-            if last_vote_time and last_vote_time.date() == today:
-                return False  # User has already voted today
-
-        # Update the vote count and set the last vote timestamp
-        await self.votes.update_one({"_id": "vote_counts"}, {"$inc": {emoji: 1}})
-        await self.users.update_one(
-            {"user_id": user_id},
-            {"$set": {"last_vote_time": current_time}},
-            upsert=True  # Create the user record if it doesn't exist
-        )
-        return True
-
-    async def get_votes(self):
-        result = await self.votes.find_one({"_id": "vote_counts"})
-        if result:
-            return {emoji: result[emoji] for emoji in ["🤬", "👎", "🖕", "💩"]}
-        return {}
+        self.top_search = self.db.top_search
+        # 
+        self.brutal = self.db.brutal
+        self.channels = self.db.channels
 
     def new_user(self, id, name):
         return dict(    
@@ -61,7 +32,7 @@ class Database:
             file_id=None,
             caption=None,
             lazy_caption=None,
-            join_date=datetime.date.today().isoformat(),
+            join_date=date.today().isoformat(),
             apply_caption=True,
             upload_as_doc=False,
             thumbnail=None,
@@ -81,15 +52,348 @@ class Database:
                 reason="",
             ),
         )
+
+
+
+# 
+
+    # async def is_subscribed(self, user_id):
+    #     user = self.brutal.find_one({'user_id': user_id})
+    #     if user and user.get('subscribed_channels'):
+    #         return True
+    #     return False
+
+    async def get_required_channels(self):
+        channels_cursor = self.channels.find().sort('_id', -1)  # Fetch channels
+        channels = await channels_cursor.to_list(length=None)  # Convert to list
+        return [int(channel['channel_id']) for channel in channels]  # Ensure all IDs are integers
     
-    async def find_join_req(self, id):
-        return bool(await self.req.find_one({'id': id}))
+    async def add_new_required_channel(self, channel_id):
+        # Check if the channel_id already exists
+        existing_channel = await self.channels.find_one({"channel_id": channel_id})
         
-    async def add_join_req(self, id):
-        await self.req.insert_one({'id': id})
+        if existing_channel:
+            return None  # Channel already exists, so don't insert
+        
+        # Insert only if it's not in the database
+        result = await self.channels.insert_one({"channel_id": channel_id})
+        return result.inserted_id  # Return the inserted channel's ID
+
+        # New method to deduct the daily limit for free users
+
+    async def remove_required_channel(self, channel_id):
+        result = await self.channels.delete_one({"channel_id": channel_id})
+        return result.deleted_count > 0  # Returns True if a channel was removed
+
+    async def deduct_limit(self, user_id):
+        user = await self.get_user(user_id)
+        if user:
+            subscription = user.get("subscription", "free")
+            daily_limit = user.get("daily_limit", DAILY_LIMIT)
+            
+            # Check if the user is a free user
+            if subscription == "free":
+                if daily_limit > 0:
+                    await self.users.update_one(
+                        {"id": user_id},
+                        {"$inc": {"daily_limit": -1}}
+                    )
+                    return True
+                else:
+                    return False  # No daily limit left
+            return True  # No deduction for paid users
+        return False  # User not found
+   
+    async def update_user(self, user_data):
+        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+   
+    async def get_user(self, user_id):
+        user_data = await self.users.find_one({"id": user_id})
+        return user_data
     
+    async def get_all_joins(self):
+        return self.users.find({})
+    
+
+
+    async def has_prime_status(self, user_id):
+        user_data = await self.get_user(user_id)
+        if user_data:
+            expiry_time_str = user_data.get("subscription_expiry")
+
+            if expiry_time_str is None:
+                print("NO SUBSCRIPTION ")
+                return False
+
+            try:
+                # Convert expiry time string back to datetime (assumes it's in UTC)
+                expiry_time = datetime.strptime(expiry_time_str, "%Y-%m-%d %H:%M:%S")
+
+                # Ensure the datetime is in UTC (or another timezone if needed)
+                expiry_time = pytz.utc.localize(expiry_time)
+
+                # Get current time in UTC
+                current_time = datetime.now(pytz.utc)
+
+                # Check if the current time is still within the expiry time
+                if current_time <= expiry_time:
+                    return True
+                else:
+                    # If expired, reset the expiry field in the database
+                    await self.users.update_one({"id": user_id}, {"$set": {"subscription": "free", "daily_limit": DAILY_LIMIT, "subscription_expiry": None}})
+                    return False  # Subscription has expired
+
+            except ValueError:
+                print(f"⚠️ Invalid expiry time format for user {user_id}: {expiry_time_str}")
+            
+        return False
+
+    # async def has_prime_status(self, user_id):
+    #     user_data = await self.get_user(user_id)
+    #     if user_data:
+    #         expiry_time_str = user_data.get("subscription_expiry")
+
+    #         if expiry_time_str is None:
+    #             # ❌ User previously used the free trial, but it has ended.
+    #             return False
+
+    #         try:
+    #             # ⏳ Convert expiry time string back to datetime
+    #             expiry_time = datetime.strptime(expiry_time_str, "%Y-%m-%d %H:%M:%S")
+
+    #             # ✅ Check if current time is still within expiry time
+    #             if datetime.now() <= expiry_time:
+    #                 return True
+    #             else:
+    #                 # ❌ Expired, reset the expiry field
+    #                 await self.users.update_one({"id": user_id}, {"$set": {"subscription_expiry": None}})
+    #         except ValueError:
+    #             print(f"⚠️ Invalid expiry time format for user {user_id}: {expiry_time_str}")
+        
+    #     return False
+
+#     async def has_prime_status(self, user_id):
+#         user_data = await self.get_user(user_id)
+
+#         if user_data:
+#             expiry_time = user_data.get("subscription_expiry")
+#             if expiry_time is None:
+#                 # User previously used the free trial, but it has ended.
+#                 return False
+#             elif isinstance(expiry_time, datetime) and datetime.now(timezone) <= expiry_time:
+#                 return True
+#             else:
+#                 await self.users.update_one({"id": user_id}, {"$set": {"subscription_expiry": None}})
+#         return False
+      
+# # 
+    async def get_user_data(self, user_id):
+        return self.brutal.find_one({'user_id': user_id})
+
+    async def update_user_subscription(self, user_id, channels_joined):
+        expiry_time = datetime.timezone.utc() + timedelta(hours=24)
+        self.brutal.update_one(
+            {'user_id': user_id},
+            {'$set': {'subscribed_channels': channels_joined, 'expiry': expiry_time}},
+            upsert=True
+        )
+        
+    async def handle_subscription_check(self, client, message):
+        user_id = message.from_user.id
+        user_data = await self.get_user_data(user_id)
+        
+        if not user_data:
+            self.brutal.insert_one({'user_id': user_id, 'free_videos': 0, 'subscribed_channels': [], 'expiry': None})
+            user_data = {'free_videos': 0, 'subscribed_channels': [], 'expiry': None}
+        
+        if user_data['free_videos'] < FREE_LIMIT:
+            self.brutal.update_one({'user_id': user_id}, {'$inc': {'free_videos': 1}})
+            return True
+        
+        if user_data['expiry'] and datetime.now() < user_data['expiry']:
+            return True
+        
+        required_channels = await self.get_required_channels()
+        joined_channels = user_data.get('subscribed_channels', [])
+        left_channels = list(set(required_channels) - set(joined_channels))
+        
+        if len(joined_channels) >= JOIN_REQUIRED:
+            await self.update_user_subscription(user_id, joined_channels)
+            return True
+        
+        btns = [[InlineKeyboardButton("Join Channel", url=f"https://t.me/{channel}")] for channel in left_channels[:JOIN_REQUIRED]]
+        btns.append([InlineKeyboardButton("🔄 Try Again", callback_data="check_subscription")])
+        await client.send_message(
+            chat_id=user_id,
+            text="🚨 You must join at least 2 channels to continue!",
+            reply_markup=InlineKeyboardMarkup(btns)
+        )
+        return False
+
+
+
+# 
+
+    async def increment_search_count(self, query, user_id):
+        """Increment search count for a query if the user hasn't searched it before."""
+        query = query.strip()  # Remove leading/trailing spaces
+        
+        if not query:  # If query is empty, don't save it
+            return  
+
+        result = await self.top_search.find_one({'query': query})
+
+        if result:
+            if user_id not in result.get('user_ids', []):
+                await self.top_search.update_one(
+                    {'query': query},
+                    {
+                        '$addToSet': {'user_ids': user_id},
+                        '$inc': {'count': 1}
+                    }
+                )
+        else:
+            await self.top_search.insert_one({
+                'query': query,
+                'user_ids': [user_id],
+                'count': 1,
+                'emoji': "🎬"
+            })
+
+        await self.update_emoji_for_all_queries()
+
+    async def update_emoji_for_all_queries(self):
+        """Update the emoji field for all queries based on their count values."""
+        top_queries = await self.top_search.find().sort('count', -1).to_list(length=3)
+
+        emojis = ["1ˢᵗ 👑 ⢾", "2ⁿᵈ 🔥 ⢾", "3ʳᵈ ❤ ⢾"]
+
+        # Reset all emojis to default first
+        await self.top_search.update_many({}, {'$set': {'emoji': "🎬"}})
+
+        # Assign emojis to the top 3 queries
+        for idx, query_data in enumerate(top_queries):
+            emoji = emojis[idx] if idx < len(emojis) else "🎬"
+            await self.top_search.update_one(
+                {'query': query_data['query']},
+                {'$set': {'emoji': emoji}}
+            )
+
+
+    # async def increment_search_count(self, query, user_id):
+    #     """Increment search count for a query if the user hasn't searched it before."""
+    #     result = await self.top_search.find_one({'query': query})
+
+    #     if result:
+    #         # Check if user_id is already in the list of users
+    #         if user_id not in result.get('user_ids', []):
+    #             # Add user_id and increment count
+    #             await self.top_search.update_one(
+    #                 {'query': query},
+    #                 {
+    #                     '$addToSet': {'user_ids': user_id},  # Add user_id if not already present
+    #                     '$inc': {'count': 1}  # Increment the count
+    #                 }
+    #             )
+    #     else:
+    #         # Insert a new query entry if it doesn't exist
+    #         await self.top_search.insert_one({
+    #             'query': query,
+    #             'user_ids': [user_id],  # Start with the current user
+    #             'count': 1,
+    #             'emoji': "🎬"  # 🎬 emoji assigned initially
+    #         })
+
+    #     # After increment, update the emoji based on the latest counts
+    #     await self.update_emoji_for_all_queries()
+
+    # async def update_emoji_for_all_queries(self):
+    #     """Update the emoji field for all queries based on their count values."""
+    #     # Fetch all queries sorted by count in descending order
+    #     top_queries = await self.top_search.find().sort('count', -1).to_list(length=3)
+
+    #     # Define emoji rankings
+    #     emojis = ["1ˢᵗ 👑 ⢾", "2ⁿᵈ 🔥 ⢾", "3ʳᵈ ❤ ⢾"]
+        
+    #     # Update emojis for the top 3 queries
+    #     for idx, query_data in enumerate(top_queries):
+    #         emoji = emojis[idx] if idx < len(emojis) else "🎬"
+    #         await self.top_search.update_one(
+    #             {'query': query_data['query']},
+    #             {'$set': {'emoji': emoji}}
+    #         )
+
+    async def get_top_searches(self, limit=100):
+        """Retrieve the top 'n' searches."""
+        cursor = self.top_search.find().sort('count', -1).limit(limit)
+        results = await cursor.to_list(length=limit)
+        
+        # Format the results with emojis
+        return [{'query': res['query'], 'count': res['count'], 'emoji': res.get('emoji')} for res in results]
+
+
+# 
+
+    # async def increment_search_count(self, query, user_id):
+    #     """Increment search count for a query if the user hasn't searched it before."""
+    #     result = await self.top_search.find_one({'query': query})
+
+    #     if result:
+    #         # Check if user_id is already in the list of users
+    #         if user_id not in result.get('user_ids', []):
+    #             # Add user_id and increment count
+    #             await self.top_search.update_one(
+    #                 {'query': query},
+    #                 {
+    #                     '$addToSet': {'user_ids': user_id},  # Add user_id if not already present
+    #                     '$inc': {'count': 1}  # Increment the count
+    #                 }
+    #             )
+    #     else:
+    #         # Insert a new query entry if it doesn't exist
+    #         await self.top_search.insert_one({
+    #             'query': query,
+    #             'user_ids': [user_id],  # Start with the current user
+    #             'count': 1
+    #         })
+    
+    # async def get_top_searches(self, limit=10):
+    #     """Retrieve the top 'n' searches."""
+    #     cursor = self.top_search.find().sort('count', -1).limit(limit)
+    #     results = await cursor.to_list(length=limit)
+    #     # Format the results if needed
+    #     return [{'query': res['query'], 'count': res['count']} for res in results]
+
+    # async def clear_user_searches(self, user_id):
+    #     """Remove a user's searches."""
+    #     await self.top_search.update_many(
+    #         {'user_ids': user_id},
+    #         {
+    #             '$pull': {'user_ids': user_id},  # Remove the user_id from user_ids
+    #             '$inc': {'count': -1}  # Decrement the count
+    #         }
+    #     )
+    #     # Remove queries with count <= 0
+    #     await self.top_search.delete_many({'count': {'$lte': 0}})
+
+# 
+    # async def find_join_req(self, id):
+    #     return bool(await self.req.find_one({'id': id}))
+        
+    # async def add_join_req(self, id):
+    #     await self.req.insert_one({'id': id})
+    
+    async def find_join_req(self, user_id, chat_id):
+        return bool(await self.req.find_one({'user_id': user_id, 'chat_id': chat_id}))
+        
+    async def add_join_req(self, user_id, chat_id):
+        await self.req.insert_one({'user_id': user_id, 'chat_id': chat_id})
+
     async def del_join_req(self):
-        await self.req.drop()
+        await self.req.delete_many({})
+    
+    # async def del_join_req(self):
+    #     await self.req.drop()
     
     async def add_user(self, id, name):
         user = self.new_user(id, name)
@@ -110,10 +414,7 @@ class Database:
         )
         await self.col.update_one({'id': id}, {'$set': {'ban_status': ban_status}})
     
-    async def get_user(self, user_id):
-        user_data = await self.users.find_one({"id": user_id})
-        return user_data
-    
+   
     async def ban_user(self, user_id, ban_reason="No Reason"):
         ban_status = dict(
             is_banned=True,
@@ -134,22 +435,7 @@ class Database:
     async def get_all_users(self):
         return self.col.find({})
     
-    async def update_user(self, user_data):
-        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
-    
-    async def has_prime_status(self, user_id):
-        user_data = await self.get_user(user_id)
-        if user_data:
-            expiry_time = user_data.get("expiry_time")
-            if expiry_time is None:
-                # User previously used the free trial, but it has ended.
-                return False
-            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
-                return True
-            else:
-                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-        return False
-        
+  
     async def remove_prime_status(self, user_id):
         return await self.update_one(
             {"id": user_id}, {"$set": {"expiry_time": None}}
@@ -220,25 +506,16 @@ class Database:
             )
         await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
     
-
     async def total_chat_count(self):
         count = await self.grp.count_documents({})
         return count
     
-
     async def get_all_chats(self):
         return self.grp.find({})
 
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
     
-    # Credit @LazyDeveloper.
-    # Please Don't remove credit.
-        # Born to make history @LazyDeveloper ! => Remember this name forever <=
-
-    # Thank you LazyDeveloper for helping us in this Journey
-    # Just for url Uploading feature
-
     async def set_apply_caption(self, id, apply_caption):
         await self.col.update_one({'id': id}, {'$set': {'apply_caption': apply_caption}})
 

@@ -1,13 +1,13 @@
 import re
 from os import getenv, environ
 import logging
-
 logging.basicConfig(
     format='%(name)s - %(levelname)s - %(message)s',
     handlers=[logging.FileHandler('log.txt'),
               logging.StreamHandler()],
     level=logging.INFO
 )
+
 id_pattern = re.compile(r'^.\d+$')
 def is_enabled(value, default):
     if value.lower() in ["true", "yes", "1", "enable", "y"]:
@@ -24,6 +24,7 @@ SESSION = environ.get('SESSION', 'Media_search')
 # BOT_TOKEN = environ['BOT_TOKEN', '7823739995:AAHXWFjY5qNYAR36eb3BDCFsGMu9jafHU68']
 API_ID = environ.get("API_ID", "13323016")
 API_HASH = environ.get("API_HASH", "68e791e616100248b0a53ae86a661a12")
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7921162807:AAEdRlKDoE4M6Ej9RtbW0nlkGecw5oYU99w") 
 BOT_TOKEN = environ.get("BOT_TOKEN", "7823739995:AAHXWFjY5qNYAR36eb3BDCFsGMu9jafHU68") 
 
 # Bot settings
@@ -42,20 +43,26 @@ UPI_ID = environ.get('UPI_ID', 'lazydeveloper@ybl') #enter your upi id here - gr
 # Admins, Channels & Users *
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '5965340120 6126812037').split()]
 CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '0').split()]
+
 auth_users = [int(user) if id_pattern.search(user) else user for user in environ.get('AUTH_USERS', '').split()]
 AUTH_USERS = (auth_users + ADMINS) if auth_users else []
-auth_channel = environ.get('AUTH_CHANNEL', '-1002378634069')
+
 auth_grp = environ.get('AUTH_GROUP')
-AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
-LAZY_DIVERTING_CHANNEL_ID = environ.get('LAZY_DIVERTING_CHANNEL_ID', '-1002178995654 -1002218462749 -1002229412749 -1002208593993').split()
+
+AUTH_CHANNEL = [int(cha) if id_pattern.search(cha) else cha for cha in environ.get('AUTH_CHANNEL', '-1002240809603 -1001765107260').split()]
+LAZY_DIVERTING_CHANNEL = int(environ.get('LAZY_DIVERTING_CHANNEL', ''))
+# LAZY_DIVERTING_CHANNEL = int(environ.get('LAZY_DIVERTING_CHANNEL', ''))
+
+
 # MongoDB information *
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://lazy:Zabintkhab7808@lazydev786.lpvunl5.mongodb.net/?retryWrites=true&w=majority")
 DATABASE_NAME = environ.get('DATABASE_NAME', "lazydev786")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'mdgi')
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'atomic')
 
 # LOG CHANNELS *
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002432116665'))
+STREAM_LOGS = int(environ.get('STREAM_LOGS', '-1002432116665'))
 LAZY_GROUP_LOGS = int(environ.get('LAZY_GROUP_LOGS', '-1002432116665'))
 REQ_CHANNEL = int(environ.get('REQ_CHANNEL', '-1002432116665'))
 PRIME_MEMBERS_LOGS = int(environ.get('PRIME_MEMBERS_LOGS', '-1002432116665'))
@@ -68,22 +75,30 @@ LAZY_RENAMERS = (lazy_renamers + ADMINS) if lazy_renamers else [] #Add user id o
 LZURL_PRIME_USERS = [int(lazyurlers) if id_pattern.search(lazyurlers) else lazyurlers for lazyurlers in environ.get('LZURL_PRIME_USERS', '5965340120 6126812037').split()]
 
 # Others
-TUTORIAL = environ.get('TUTORIAL', 'https://t.me/+tgPf04FXMOllMWVl/186') # Tutorial video link for opening shortlink website 
+TUTORIAL = environ.get('TUTORIAL', 'https://t.me/real_moviesadda6') # Tutorial video link for opening shortlink website 
 IS_TUTORIAL = bool(environ.get('IS_TUTORIAL', True))
-SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'LazyDeveloper')
-P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "False")), False)
-IMDB = is_enabled((environ.get('IMDB', "True")), True)
-SINGLE_BUTTON = is_enabled((environ.get('SINGLE_BUTTON', "False")), False)
-CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", "⚡<b>File uploaded by [ModiMovie](https://t.me/+tgPf04FXMOllMWVl)</b>⚡\n\n📂<b>File Name:</b> ⪧ {file_caption} \n <b>Size: </b>🧩{file_size}\n\n💃")
+SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'LazyDeveloperSupport')
+P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
+IMDB = is_enabled((environ.get('IMDB', "False")), True)
+SINGLE_BUTTON = is_enabled((environ.get('SINGLE_BUTTON', "True")), False)
+CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", "⚡<b>File uploaded by [MoviesAdda](https://t.me/real_MoviesAdda6)</b>⚡\n\n📂<b>File Name:</b> ⪧ {file_caption}\n❤🔻")
 BATCH_FILE_CAPTION = environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
-IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", "<b>Your Query: {query}</b> \n‌‌‌‌🏷 Title: <a href={url}>{title}</a>\n🎭 Genres: {genres}\n📆 Year: <a href={url}/releaseinfo>{year}</a>\n🌟 Rating: <a href={url}/ratings>{rating}</a> / 10 \n\n♥️ we are nothing without you ♥️ \n\n💛 Please Share Us 💛\n\n⚠️Click on the button 👇 below to get your query privately")
+
+IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", "<a href={url}>{title} {year}</a>\n❤You searched: {query}")
+
+# IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", """
+# <b>★<a href={url}/ratings>{rating}</a> <a href={url}>{title}</a> {year}</b>
+# 𓆩ཫDirector : {director} | 🎥 {genres}
+# ✵You Searched for: {query} ❤
+# """)
+
 LONG_IMDB_DESCRIPTION = is_enabled(environ.get("LONG_IMDB_DESCRIPTION", "False"), False)
 SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "True"), False)
 MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
 INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
 FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).split()]
 MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "True")), True)
-PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "True")), False)
+PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), False)
 
 #LazyRenamer Configs
@@ -93,10 +108,10 @@ LAZY_MODE = bool(environ.get("LAZY_MODE")) #make it true to enable file renaming
 
 # Requested Content template variables --- 
 ADMIN_USRNM = environ.get('ADMIN_USRNM','LazyDeveloperr') # WITHOUT @
-MAIN_CHANNEL_USRNM = environ.get('MAIN_CHANNEL_USRNM','LazyDeveloper') # WITHOUT @
+MAIN_CHANNEL_USRNM = environ.get('MAIN_CHANNEL_USRNM','MoviesAdda6') # WITHOUT @
 DEV_CHANNEL_USRNM = environ.get('DEV_CHANNEL_USRNM','LazyDeveloper') # WITHOUT @
 LAZY_YT_HANDLE = environ.get('LAZY_YT_HANDLE','LayDeveloperr')  # WITHOUT @ [  add only handle - don't add full url  ] 
-MOVIE_GROUP_USERNAME = environ.get('MOVIE_GROUP_USERNAME', "+tl1Ll8L8TbQwMjdl") #[ without @ ]
+MOVIE_GROUP_USERNAME = environ.get('MOVIE_GROUP_USERNAME', "+GxRpsXXqn2M2MTdl") #[ without @ ]
 
 # Url Shortner
 URL_MODE = is_enabled((environ.get("URL_MODE","True")), False) # make it true to enable url shortner in groups or pm
@@ -148,6 +163,14 @@ else:
 BANNED_CHANNELS = list(set(int(x) for x in str(getenv("BANNED_CHANNELS", "-1001987654567")).split())) 
 OWNER_USERNAME = "LazyDeveloper"
 
+
+# 
+templist = []
+channel_ids_str = " ".join(map(str, templist))
+LAZYDEVELOPER_CHANNELS = [int(c) for c in channel_ids_str.split()]
+
+
+
 lazydownloaders = [int(lazydownloaders) if id_pattern.search(lazydownloaders) else lazydownloaders for lazydownloaders in environ.get('PRIME_DOWNLOADERS', '').split()]
 PRIME_DOWNLOADERS = (lazydownloaders) if lazydownloaders else []
 
@@ -170,7 +193,7 @@ LANGUAGES = ["hindi", "hin", "english", "eng", "korean", "kor", "urdu", "urd","c
 SEASONS = ["season 1" , "season 2" , "season 3" , "season 4", "season 5" , "season 6" , "season 7" , "season 8" , "season 9" , "season 10"]
 QUALITIES = ["360P", "", "480P", "", "720P", "", "1080P", "", "1440P", "", "2160P", ""]
 
-MAX_B_TN = environ.get("MAX_B_TN", "10")
+MAX_LAZY_BTNS = int(environ.get("MAX_LAZY_BTNS", "6"))
 MAX_BTN = is_enabled((environ.get('MAX_BTN', "True")), True)
 
 # Auto Delete For Group Message (Self Delete) #
@@ -190,20 +213,42 @@ DOWNLOAD_TEXT_URL = "https://t.me/+tgPf04FXMOllMWVl"
 CAPTION_BUTTON = "Get Updates"
 CAPTION_BUTTON_URL = "https://t.me/+tgPf04FXMOllMWVl"
 
-LOG_STR = "Current Cusomized Configurations are:-\n"
-LOG_STR += ("IMDB Results are enabled, Bot will be showing imdb details for you queries.\n" if IMDB else "IMBD Results are disabled.\n")
-LOG_STR += ("P_TTI_SHOW_OFF found , Users will be redirected to send /start to Bot PM instead of sending file file directly\n" if P_TTI_SHOW_OFF else "P_TTI_SHOW_OFF is disabled files will be send in PM, instead of sending start.\n")
-LOG_STR += ("SINGLE_BUTTON is Found, filename and files size will be shown in a single button instead of two separate buttons\n" if SINGLE_BUTTON else "SINGLE_BUTTON is disabled , filename and file_sixe will be shown as different buttons\n")
-LOG_STR += (f"CUSTOM_FILE_CAPTION enabled with value {CUSTOM_FILE_CAPTION}, your files will be send along with this customized caption.\n" if CUSTOM_FILE_CAPTION else "No CUSTOM_FILE_CAPTION Found, Default captions of file will be used.\n")
-LOG_STR += ("Long IMDB storyline enabled." if LONG_IMDB_DESCRIPTION else "LONG_IMDB_DESCRIPTION is disabled , Plot will be shorter.\n")
-LOG_STR += ("Spell Check Mode Is Enabled, bot will be suggesting related movies if movie not found\n" if SPELL_CHECK_REPLY else "SPELL_CHECK_REPLY Mode disabled\n")
-LOG_STR += (f"MAX_LIST_ELM Found, long list will be shortened to first {MAX_LIST_ELM} elements\n" if MAX_LIST_ELM else "Full List of casts and crew will be shown in imdb template, restrict them by adding a value to MAX_LIST_ELM\n")
-LOG_STR += f"Your current IMDB template is {IMDB_TEMPLATE}"
+# configuration
+MAX_SUBSCRIPTION_TIME = int(environ.get('MAX_SUBSCRIPTION_TIME', '24')) # KEEP THIS VALUES IN HOURS ⏰🕛
+FILE_AUTO_DELETE_TIME = int(environ.get('FILE_AUTO_DELETE_TIME', '300')) #in seconds - 300 seconds ==> 5 minutes 
+GROUP_MSG_DELETE_TIME = int(environ.get('GROUP_MSG_DELETE_TIME', '600')) #in seconds - 600 seconds ==> 10 minutes 
+# DONATION_LINK = environ.get("DONATION_LINK","https://buymeacoffee.com/lazydeveloperr")
+DONATION_LINK = environ.get("DONATION_LINK","https://buymeacoffee.com/lazyDeveloperr")
+CHANNELS_PER_PAGE = 8 # AUTH CHANELS LISTS ## FOR ADMINS ❤
+DAILY_LIMIT = 2
 
-# Credit @LazyDeveloper.
-# Please Don't remove credit.
-# Born to make history @LazyDeveloper !
-# Thank you LazyDeveloper for helping us in this Journey
-# 🥰  Thank you for giving me credit @LazyDeveloperr  🥰
-# for any error please contact me -> telegram@LazyDeveloperr or insta @LazyDeveloperr 
-# rip paid developers 🤣 - >> No need to buy paid source code while @LazyDeveloperr is here 😍😍
+MAX_SEASONS_PER_PAGE = 12
+MAX_EPISODES_LIST = 12 ## FOR SEASON BTN ❤
+MAX_EPISODES_PER_PAGE = 6 ## FOR SEASON BTN ❤
+
+MAX_LANG_PER_PAGE = 10 ## FOR SEASON BTN ❤
+MAX_LANG_FILE_PER_PAGE = 6 ## FOR SEASON BTN ❤
+
+MAX_QUAL_PER_PAGE = 10 ## FOR SEASON BTN ❤
+MAX_QUAL_FILE_PER_PAGE = 6 ## FOR SEASON BTN ❤
+
+CHANNEL_NAME = "Hidden Xman"
+# BACK_BTN_TXT = "⋞ ʙᴀᴄᴋ" #◀️
+# NEXT_BTN_TXT = "ɴᴇxᴛ ⋟" #▶️
+BACK_BTN_TXT = "◀️" # ⋞ ʙᴀᴄᴋ
+NEXT_BTN_TXT = "▶️" # ɴᴇxᴛ ⋟
+
+# SENSITIVE VARS
+LAZYCONTAINER = {}  #DON'T TOUCH THIS VAR !
+
+LOG_STR = "🚀Current Cusomized Configurations are:-\n"
+LOG_STR += ("𓆩ཫ⚙ཀ𓆪 IMDB Results are enabled, Bot will be showing imdb details for you queries.\n" if IMDB else "IMBD Results are disabled.\n")
+LOG_STR += ("𓆩ཫ⚙ཀ𓆪 P_TTI_SHOW_OFF found , Users will be redirected to send /start to Bot PM instead of sending file file directly\n" if P_TTI_SHOW_OFF else "P_TTI_SHOW_OFF is disabled files will be send in PM, instead of sending start.\n")
+LOG_STR += ("𓆩ཫ⚙ཀ𓆪 SINGLE_BUTTON is Found, filename and files size will be shown in a single button instead of two separate buttons\n" if SINGLE_BUTTON else "SINGLE_BUTTON is disabled , filename and file_sixe will be shown as different buttons\n")
+LOG_STR += (f"𓆩ཫ⚙ཀ𓆪 CUSTOM_FILE_CAPTION enabled with value {CUSTOM_FILE_CAPTION}, your files will be send along with this customized caption.\n" if CUSTOM_FILE_CAPTION else "No CUSTOM_FILE_CAPTION Found, Default captions of file will be used.\n")
+LOG_STR += ("𓆩ཫ⚙ཀ𓆪 Long IMDB storyline enabled." if LONG_IMDB_DESCRIPTION else "LONG_IMDB_DESCRIPTION is disabled , Plot will be shorter.\n")
+LOG_STR += ("𓆩ཫ⚙ཀ𓆪 A.I Spell Check Mode Is Enabled, bot will be suggesting related movies if movie not found\n" if SPELL_CHECK_REPLY else "SPELL_CHECK_REPLY Mode disabled\n")
+LOG_STR += (f"𓆩ཫ⚙ཀ𓆪 MAX_LIST_ELM Found, long list will be shortened to first {MAX_LIST_ELM} elements\n" if MAX_LIST_ELM else "Full List of casts and crew will be shown in imdb template, restrict them by adding a value to MAX_LIST_ELM\n")
+LOG_STR += f"𓆩ཫ⚙ཀ𓆪 Your current IMDB template is\n:  {IMDB_TEMPLATE}"
+
+
